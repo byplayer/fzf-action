@@ -1,4 +1,4 @@
-# fzf-menu
+# fzf-action
 
 A ZSH plugin that provides zaw-like action selection menus using fzf.
 
@@ -20,7 +20,7 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
 
    ```bash
    # If you're using this as part of .zsh.d
-   # The plugin should be in: ~/.zsh.d/plugins/fzf-menu/
+   # The plugin should be in: ~/.zsh.d/plugins/fzf-action/
    ```
 
 2. Load the plugin in your `.zshrc` or ZSH configuration:
@@ -29,21 +29,21 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
 
    ```zsh
    # Simply source the plugin file - it will auto-load all components
-   source ~/.zsh.d/plugins/fzf-menu/fzf-menu.plugin.zsh
+   source ~/.zsh.d/plugins/fzf-action/fzf-action.plugin.zsh
    ```
 
    **Option B: Manual loading**
 
    ```zsh
-   source ~/.zsh.d/plugins/fzf-menu/fzf-menu.zsh
-   source ~/.zsh.d/plugins/fzf-menu/git-branches.zsh
+   source ~/.zsh.d/plugins/fzf-action/fzf-action.zsh
+   source ~/.zsh.d/plugins/fzf-action/git-branches.zsh
    ```
 
 3. (Optional) Add key binding for quick access:
 
    ```zsh
-   bindkey '^gr' fzf-menu-git-branches-all  # All branches (local + remote)
-   bindkey '^gb' fzf-menu-git-branches       # Local branches only
+   bindkey '^gr' fzf-action-git-branches-all  # All branches (local + remote)
+   bindkey '^gb' fzf-action-git-branches       # Local branches only
    ```
 
 ## Usage
@@ -53,7 +53,7 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
 Run the command:
 
 ```zsh
-fzf-menu-git-branches-all
+fzf-action-git-branches-all
 ```
 
 This displays **all local and remote branches** in your git repository.
@@ -63,7 +63,7 @@ This displays **all local and remote branches** in your git repository.
 Run the command:
 
 ```zsh
-fzf-menu-git-branches
+fzf-action-git-branches
 ```
 
 This displays **local branches only** in your git repository.
@@ -97,7 +97,7 @@ This displays **local branches only** in your git repository.
 
 - Current branch is highlighted in **bold yellow** with an asterisk (\*)
 - Local branches are marked with `(local)`
-- Remote branches are shown as `<remote>/<branch>` and marked with `(remote)` (only in `fzf-menu-git-branches-all`)
+- Remote branches are shown as `<remote>/<branch>` and marked with `(remote)` (only in `fzf-action-git-branches-all`)
   - Example: `origin/main (remote)`, `upstream/develop (remote)`
 
 ## Examples
@@ -106,7 +106,7 @@ This displays **local branches only** in your git repository.
 
 ```zsh
 # Run the command
-fzf-menu-git-branches-all
+fzf-action-git-branches-all
 
 # Type to filter: "feat"
 # Press ENTER to switch to the branch
@@ -116,7 +116,7 @@ fzf-menu-git-branches-all
 
 ```zsh
 # Run the command
-fzf-menu-git-branches
+fzf-action-git-branches
 
 # Type to filter: "feat"
 # Press ENTER to switch to the branch
@@ -126,9 +126,9 @@ fzf-menu-git-branches
 
 ```zsh
 # Run the command (works with both functions)
-fzf-menu-git-branches-all
+fzf-action-git-branches-all
 # or
-fzf-menu-git-branches
+fzf-action-git-branches
 
 # Select a branch
 # Press TAB
@@ -139,8 +139,8 @@ fzf-menu-git-branches
 
 ```zsh
 # Add to your .zshrc
-bindkey '^g^b' fzf-menu-git-branches-all  # Ctrl+g Ctrl+b - all branches
-bindkey '^gb' fzf-menu-git-branches       # Ctrl+g b - local branches only
+bindkey '^g^b' fzf-action-git-branches-all  # Ctrl+g Ctrl+b - all branches
+bindkey '^gb' fzf-action-git-branches       # Ctrl+g b - local branches only
 
 # Now you can press:
 # - Ctrl+g Ctrl+b to open all branches menu
@@ -151,8 +151,8 @@ bindkey '^gb' fzf-menu-git-branches       # Ctrl+g b - local branches only
 
 The plugin consists of two main components:
 
-1. **fzf-menu.zsh**: Core framework for creating fzf-based action menus
-   - `fzf-menu-core()`: Main function that handles the two-stage selection
+1. **fzf-action.zsh**: Core framework for creating fzf-based action menus
+   - `fzf-action-core()`: Main function that handles the two-stage selection
    - Reusable for creating other menu sources
 
 2. **git-branches.zsh**: Git branch management implementation
@@ -162,7 +162,7 @@ The plugin consists of two main components:
 
 ## Extending
 
-You can create your own fzf-menu sources by following this pattern:
+You can create your own fzf-action sources by following this pattern:
 
 ```zsh
 # 1. Generate candidates
@@ -197,7 +197,7 @@ function my-source-menu() {
         "Second action"
     )
 
-    fzf-menu-core "$candidates" \
+    fzf-action-core "$candidates" \
         "$(printf "%s\n" "${actions[@]}")" \
         "$(printf "%s\n" "${action_descriptions[@]}")" \
         1  # Default action index
@@ -209,7 +209,7 @@ zle -N my-source-menu
 
 ## Comparison with zaw
 
-| Feature          | fzf-menu   | zaw           |
+| Feature          | fzf-action | zaw           |
 | ---------------- | ---------- | ------------- |
 | Search engine    | fzf        | filter-select |
 | Action selection | TAB key    | TAB key       |
@@ -219,7 +219,7 @@ zle -N my-source-menu
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Credits
 
