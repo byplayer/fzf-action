@@ -78,8 +78,8 @@ function fzf-action-git-branches-extract-name() {
     local formatted="$1"
     # Strip ANSI codes first
     local clean=$(fzf-action-strip-ansi "$formatted")
-    # Remove: leading spaces/asterisk, trailing " (local)" or " (remote)"
-    clean=$(sed -e 's/^[[:space:]]*\*\?[[:space:]]*//' -e 's/ (local)$//' -e 's/ (remote)$//' <<< "$clean")
+    # Remove: leading spaces/asterisk and any following spaces, then trailing markers
+    clean=$(sed -e 's/^[[:space:]]*\*[[:space:]]*//' -e 's/^[[:space:]]*//' -e 's/ (local)$//' -e 's/ (remote)$//' <<< "$clean")
     echo "$clean"
 }
 
