@@ -8,18 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.1] - 2025-10-27
 
 ### Fixed
+
 - Fixed critical bug in `fzf-action-git-branches-extract-name()` that prevented all branch commands from working
 - Branch name parsing now correctly removes leading spaces, asterisks, and trailing markers like " (local)" and " (remote)"
 - Replaced failing zsh parameter expansion patterns with reliable sed regex patterns
 - All git branch operations (switch, merge, rebase, diff, etc.) now work correctly
 
 ### Changed
+
 - Improved code efficiency by using here-string (`<<<`) instead of `echo |` piping
 - Enhanced inline comments to better explain the parsing logic
 
-## [0.1.0] - 2024-01-XX
+## [0.1.0] - 2024-10-27
 
 ### Added
+
 - Initial release of fzf-action plugin
 - Git branch management with fzf-based two-stage selection
 - Support for 15 git branch operations:
@@ -35,6 +38,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive documentation
 
 ### Security
+
 - Branch name sanitization to prevent command injection
 - Input validation for new branch names
 - Confirmation prompts for destructive operations
+
+---
+
+[0.1.1]: https://github.com/byplayer/fzf-action/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/byplayer/fzf-action/releases/tag/v0.1.0
