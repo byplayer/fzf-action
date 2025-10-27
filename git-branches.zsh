@@ -87,22 +87,36 @@ function fzf-action-git-branches-extract-name() {
     echo "$clean"
 }
 
+# Sanitize branch name for safe use in git commands
+# This prevents command injection by ensuring branch names are safe
+function fzf-action-git-branches-sanitize() {
+    local branch="$1"
+    # Git branch names should not contain: spaces, ~, ^, :, ?, *, [, \, .., @{, //
+    # and should not start with ., end with .lock, or contain control characters
+    # However, they may legitimately contain /, -, _
+    # For safety, we escape single quotes and wrap in single quotes
+    # This prevents any shell interpretation of special characters
+    printf '%s' "${branch//\'/\'\\\'\'}"
+}
+
 # Action: Switch to branch (default)
 function fzf-action-git-branches-checkout() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
 
     # Check if it's a remote branch
     if [[ "$1" =~ "(remote)" ]]; then
         # Extract local branch name from remote branch (e.g., origin/main -> main)
         local local_branch=$(echo "$branch" | sed 's|^[^/]*/||')
+        local safe_local_branch=$(fzf-action-git-branches-sanitize "$local_branch")
         # Check if local branch already exists
         if git show-ref --verify --quiet "refs/heads/$local_branch"; then
-            BUFFER="git switch '$local_branch'"
+            BUFFER="git switch '${safe_local_branch}'"
         else
-            BUFFER="git switch -c '$local_branch' '$branch'"
+            BUFFER="git switch -c '${safe_local_branch}' '${safe_branch}'"
         fi
     else
-        BUFFER="git switch '$branch'"
+        BUFFER="git switch '${safe_branch}'"
     fi
     zle accept-line
 }
@@ -117,32 +131,37 @@ function fzf-action-git-branches-append() {
 # Action: Merge
 function fzf-action-git-branches-merge() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
-    BUFFER="git merge '$branch'"
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
+    BUFFER="git merge '${safe_branch}'"
     zle accept-line
 }
 
 # Action: Merge with rebase
 function fzf-action-git-branches-merge-rebase() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
-    BUFFER="git merge --rebase '$branch'"
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
+    BUFFER="git merge --rebase '${safe_branch}'"
     zle accept-line
 }
 
 # Action: Merge with no-ff
 function fzf-action-git-branches-merge-noff() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
-    BUFFER="git merge --no-ff '$branch'"
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
+    BUFFER="git merge --no-ff '${safe_branch}'"
     zle accept-line
 }
 
 # Action: Merge to another branch
 function fzf-action-git-branches-merge-to() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
     local target_branch
     target_branch=$(git branch | sed 's/^..//' | fzf --header="Select target branch to merge into")
 
     if [[ -n "$target_branch" ]]; then
-        BUFFER="git switch '$target_branch' && git merge '$branch'"
+        local safe_target=$(fzf-action-git-branches-sanitize "$target_branch")
+        BUFFER="git switch '${safe_target}' && git merge '${safe_branch}'"
         zle accept-line
     fi
 }
@@ -150,27 +169,31 @@ function fzf-action-git-branches-merge-to() {
 # Action: Reset to branch
 function fzf-action-git-branches-reset() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
-    BUFFER="git reset '$branch'"
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
+    BUFFER="git reset '${safe_branch}'"
     zle accept-line
 }
 
 # Action: Rebase
 function fzf-action-git-branches-rebase() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
-    BUFFER="git rebase '$branch'"
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
+    BUFFER="git rebase '${safe_branch}'"
     zle accept-line
 }
 
 # Action: Rebase interactive from branch
 function fzf-action-git-branches-rebase-interactive() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
-    BUFFER="git rebase -i '$branch'"
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
+    BUFFER="git rebase -i '${safe_branch}'"
     zle accept-line
 }
 
 # Action: Create new branch from selected
 function fzf-action-git-branches-create-from() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
     echo -n "Enter new branch name: "
     read new_branch
 
@@ -192,33 +215,37 @@ function fzf-action-git-branches-create-from() {
         return 1
     fi
 
-    BUFFER="git switch -c '$new_branch' '$branch'"
+    local safe_new_branch=$(fzf-action-git-branches-sanitize "$new_branch")
+    BUFFER="git switch -c '${safe_new_branch}' '${safe_branch}'"
     zle accept-line
 }
 
 # Action: Show diff
 function fzf-action-git-branches-diff() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
-    BUFFER="git diff '$branch'"
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
+    BUFFER="git diff '${safe_branch}'"
     zle accept-line
 }
 
 # Action: Show diff statistics
 function fzf-action-git-branches-diff-stat() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
-    BUFFER="git diff --stat '$branch'"
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
+    BUFFER="git diff --stat '${safe_branch}'"
     zle accept-line
 }
 
 # Action: Reset hard to branch
 function fzf-action-git-branches-reset-hard() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
     echo "WARNING: This will reset hard to branch: $branch"
     echo -n "Are you sure? (y/N): "
     read confirm
 
     if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
-        BUFFER="git reset --hard '$branch'"
+        BUFFER="git reset --hard '${safe_branch}'"
         zle accept-line
     else
         echo "Cancelled"
@@ -229,6 +256,7 @@ function fzf-action-git-branches-reset-hard() {
 # Action: Delete branch
 function fzf-action-git-branches-delete() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
 
     # Check if it's a remote branch
     if [[ "$1" =~ "(remote)" ]]; then
@@ -238,13 +266,14 @@ function fzf-action-git-branches-delete() {
         return 1
     fi
 
-    BUFFER="git branch -d '$branch'"
+    BUFFER="git branch -d '${safe_branch}'"
     zle accept-line
 }
 
 # Action: Force delete branch
 function fzf-action-git-branches-delete-force() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
 
     # Check if it's a remote branch
     if [[ "$1" =~ "(remote)" ]]; then
@@ -254,7 +283,7 @@ function fzf-action-git-branches-delete-force() {
         return 1
     fi
 
-    BUFFER="git branch -D '$branch'"
+    BUFFER="git branch -D '${safe_branch}'"
     zle accept-line
 }
 
