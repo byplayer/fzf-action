@@ -8,7 +8,6 @@ function fzf-action-git-branches-get-candidates() {
         return 1
     fi
 
-    local current_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
     local -a branches
 
     # Get local branches
@@ -51,7 +50,6 @@ function fzf-action-git-branches-get-local-candidates() {
         return 1
     fi
 
-    local current_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
     local -a branches
 
     # Get local branches only
@@ -78,8 +76,14 @@ function fzf-action-git-branches-get-local-candidates() {
 # Extract clean branch name from formatted output
 function fzf-action-git-branches-extract-name() {
     local formatted="$1"
-    # Strip ANSI codes and markers
-    local clean=$(echo "$formatted" | sed 's/\x1b\[[0-9;]*m//g' | sed 's/^[* ]*//' | sed 's/ (local)$//' | sed 's/ (remote)$//')
+    # Strip ANSI codes first
+    local clean=$(fzf-action-strip-ansi "$formatted")
+    # Remove leading spaces and asterisk
+    clean="${clean##*( |\*)}"
+    clean="${clean## }"
+    # Remove trailing markers
+    clean="${clean%% (local)}"
+    clean="${clean%% (remote)}"
     echo "$clean"
 }
 
@@ -91,7 +95,12 @@ function fzf-action-git-branches-checkout() {
     if [[ "$1" =~ "(remote)" ]]; then
         # Extract local branch name from remote branch (e.g., origin/main -> main)
         local local_branch=$(echo "$branch" | sed 's|^[^/]*/||')
-        BUFFER="git switch -c '$local_branch' '$branch'"
+        # Check if local branch already exists
+        if git show-ref --verify --quiet "refs/heads/$local_branch"; then
+            BUFFER="git switch '$local_branch'"
+        else
+            BUFFER="git switch -c '$local_branch' '$branch'"
+        fi
     else
         BUFFER="git switch '$branch'"
     fi
@@ -165,10 +174,26 @@ function fzf-action-git-branches-create-from() {
     echo -n "Enter new branch name: "
     read new_branch
 
-    if [[ -n "$new_branch" ]]; then
-        BUFFER="git switch -c '$new_branch' '$branch'"
-        zle accept-line
+    if [[ -z "$new_branch" ]]; then
+        return 0
     fi
+
+    # Validate branch name (alphanumeric, slash, dash, underscore only)
+    if [[ ! "$new_branch" =~ ^[a-zA-Z0-9/_-]+$ ]]; then
+        echo "Error: Invalid branch name (use only letters, numbers, /, -, _)" >&2
+        zle reset-prompt
+        return 1
+    fi
+
+    # Check if branch already exists
+    if git show-ref --verify --quiet "refs/heads/$new_branch"; then
+        echo "Error: Branch '$new_branch' already exists" >&2
+        zle reset-prompt
+        return 1
+    fi
+
+    BUFFER="git switch -c '$new_branch' '$branch'"
+    zle accept-line
 }
 
 # Action: Show diff

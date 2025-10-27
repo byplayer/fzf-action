@@ -38,8 +38,9 @@ function fzf-action-core() {
     fi
 
     # Parse fzf output (first line is key pressed, rest is selection)
-    local key=$(echo "$selected" | head -1)
-    local candidate=$(echo "$selected" | tail -n +2)
+    local -a lines=("${(@f)selected}")
+    local key="${lines[1]}"
+    local candidate="${lines[2]}"
 
     if [[ -z "$candidate" ]]; then
         return 0
