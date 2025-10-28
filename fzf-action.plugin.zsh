@@ -6,3 +6,6 @@ source "${0:A:h}/fzf-action.zsh"
 
 # Load git branches source
 source "${0:A:h}/git-branches.zsh"
+
+# Load git files source
+source "${0:A:h}/git-files.zsh"

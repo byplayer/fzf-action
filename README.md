@@ -1,6 +1,8 @@
 # fzf-action
 
-[![Version](https://img.shields.io/badge/version-0.1.2-blue.svg)](CHANGELOG.md)
+<!-- markdownlint-disable MD013 -->
+
+[![Version](https://img.shields.io/badge/version-0.1.3-blue.svg)](CHANGELOG.md)
 
 A ZSH plugin that provides zaw-like action selection menus using fzf.
 
@@ -11,6 +13,7 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
 - **Two-stage selection workflow**: Select item → Select action
 - **fzf-based interface**: Fast, intuitive fuzzy finding
 - **Git branch management**: Comprehensive branch operations with menu selection
+- **Git file management**: File operations with color-coded status indicators
 - **Extensible**: Easy to add new sources and actions
 
 ## Requirements
@@ -41,36 +44,32 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
    ```zsh
    source ~/.zsh.d/plugins/fzf-action/fzf-action.zsh
    source ~/.zsh.d/plugins/fzf-action/git-branches.zsh
+   source ~/.zsh.d/plugins/fzf-action/git-files.zsh
    ```
 
-3. (Optional) Add key binding for quick access:
+3. **Add key bindings** (Required):
+
+   These functions are ZLE widgets and can only be used via key bindings. Add the following to your `.zshrc`:
 
    ```zsh
-   bindkey '^gr' fzf-action-git-branches-all  # All branches (local + remote)
+   bindkey '^g^b' fzf-action-git-branches-all  # All branches (local + remote)
    bindkey '^gb' fzf-action-git-branches       # Local branches only
+   bindkey '^gf' fzf-action-git-files          # Git files
    ```
+
+   You can use any key combination you prefer.
 
 ## Usage
 
+**Important**: These are ZLE widgets that integrate with the Zsh Line Editor. They must be invoked via key bindings and cannot be called directly from the command line.
+
 ### Git Branches (All)
 
-Run the command:
-
-```zsh
-fzf-action-git-branches-all
-```
-
-This displays **all local and remote branches** in your git repository.
+Press the key binding (e.g., `Ctrl+g Ctrl+b`) to display **all local and remote branches** in your git repository.
 
 ### Git Branches (Local Only)
 
-Run the command:
-
-```zsh
-fzf-action-git-branches
-```
-
-This displays **local branches only** in your git repository.
+Press the key binding (e.g., `Ctrl+g b`) to display **local branches only** in your git repository.
 
 **Workflow:**
 
@@ -97,6 +96,49 @@ This displays **local branches only** in your git repository.
 - **delete** - Delete the selected local branch
 - **delete force** - Force delete the selected local branch
 
+### Git Files
+
+Press the key binding (e.g., `Ctrl+g f`) to display **all tracked and untracked files** in your git repository with color-coded status indicators.
+
+**Workflow:**
+
+1. **Select a file**: Use arrow keys or type to filter files
+2. **Choose action**:
+   - Press `ENTER`: Execute default action (edit file in $EDITOR)
+   - Press `TAB`: Open action menu to select from available operations
+
+**Available Actions:**
+
+- **edit** (Default) - Edit file in your editor (uses `$EDITOR` or `vim`)
+- **append to edit buffer** - Insert file path into command line
+- **git add** - Stage the file
+- **git add -p** - Interactive staging (stage specific hunks)
+- **git reset** - Unstage the file
+- **git restore** - Restore working tree changes
+- **git checkout** - Checkout the file from HEAD
+- **git diff** - Show diff for the file
+- **git diff --stat** - Show diff statistics
+- **git log** - Show commit history for the file
+- **git log --oneline** - Show one-line commit history
+- **cat** - Display file contents
+- **less** - View file in pager
+- **copy path to clipboard** - Copy file path to clipboard (macOS)
+- **git rm** - Remove the file from git
+
+### File Status Display
+
+Files are displayed with color-coded status indicators:
+
+- **[modified]** (yellow) - File has unstaged changes
+- **[staged]** (green) - File is staged for commit
+- **[staged|modified]** (cyan) - File is staged but has additional unstaged changes
+- **[staged(add)]** (green) - New file staged for commit
+- **[add|modified]** (cyan) - New file staged but with additional changes
+- **[deleted]** (red) - File is deleted
+- **[staged(del)]** (red) - File deletion is staged
+- **[untracked]** (magenta) - File is not tracked by git
+- **[conflict]** (bold red) - File has merge conflicts
+
 ### Branch Display
 
 - Current branch is highlighted in **bold yellow** with an asterisk (\*)
@@ -109,9 +151,7 @@ This displays **local branches only** in your git repository.
 ### Quick switch (all branches)
 
 ```zsh
-# Run the command
-fzf-action-git-branches-all
-
+# Press Ctrl+g Ctrl+b (or your configured key binding)
 # Type to filter: "feat"
 # Press ENTER to switch to the branch
 ```
@@ -119,9 +159,7 @@ fzf-action-git-branches-all
 ### Quick switch (local branches only)
 
 ```zsh
-# Run the command
-fzf-action-git-branches
-
+# Press Ctrl+g b (or your configured key binding)
 # Type to filter: "feat"
 # Press ENTER to switch to the branch
 ```
@@ -129,14 +167,19 @@ fzf-action-git-branches
 ### Select action
 
 ```zsh
-# Run the command (works with both functions)
-fzf-action-git-branches-all
-# or
-fzf-action-git-branches
-
+# Press Ctrl+g Ctrl+b or Ctrl+g b (or your configured key binding)
 # Select a branch
 # Press TAB
 # Choose "diff" from action menu
+```
+
+### Git files example
+
+```zsh
+# Press Ctrl+g f (or your configured key binding)
+# Type to filter: "src/index"
+# Press ENTER to edit the file
+# or Press TAB and choose "git diff" to see changes
 ```
 
 ### Key binding example
@@ -145,15 +188,17 @@ fzf-action-git-branches
 # Add to your .zshrc
 bindkey '^g^b' fzf-action-git-branches-all  # Ctrl+g Ctrl+b - all branches
 bindkey '^gb' fzf-action-git-branches       # Ctrl+g b - local branches only
+bindkey '^gf' fzf-action-git-files          # Ctrl+g f - git files
 
 # Now you can press:
 # - Ctrl+g Ctrl+b to open all branches menu
 # - Ctrl+g b to open local branches menu
+# - Ctrl+g f to open git files menu
 ```
 
 ## Architecture
 
-The plugin consists of two main components:
+The plugin consists of these main components:
 
 1. **fzf-action.zsh**: Core framework for creating fzf-based action menus
    - `fzf-action-core()`: Main function that handles the two-stage selection
@@ -163,6 +208,12 @@ The plugin consists of two main components:
    - Candidate generation (local and remote branches)
    - Action handlers for each git operation
    - Branch name parsing and formatting
+
+3. **git-files.zsh**: Git file management implementation
+   - Tracked and untracked file listing with status
+   - File operation handlers (edit, stage, diff, log, etc.)
+   - Color-coded status indicators
+   - File path sanitization for safe command execution
 
 ## Extending
 
