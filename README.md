@@ -61,7 +61,7 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
 
 ## Usage
 
-**Important**: These are ZLE widgets that integrate with the Zsh Line Editor. They must be invoked via key bindings and cannot be called directly from the command line.
+> **Important**: These are ZLE widgets that integrate with the Zsh Line Editor. They must be invoked via key bindings and cannot be called directly from the command line.
 
 ### Git Branches (All)
 
