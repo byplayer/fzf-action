@@ -90,7 +90,7 @@ function fzf-action-git-files-edit() {
         return 1
     fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
-    BUFFER="${EDITOR:-vim} '${git_base}${safe_file}'"
+    BUFFER="${FZF_ACTION_EDITOR:-${EDITOR:-vim}} '${git_base}${safe_file}'"
     zle accept-line
 }
 

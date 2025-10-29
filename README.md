@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD013 -->
 
-[![Version](https://img.shields.io/badge/version-0.1.3-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.1.4-blue.svg)](CHANGELOG.md)
 
 A ZSH plugin that provides zaw-like action selection menus using fzf.
 
@@ -66,6 +66,7 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
 The clipboard copy action uses the `FZF_ACTION_CLIP_COPY_CMD` environment variable. The plugin automatically detects and configures the appropriate clipboard command for your platform:
 
 **Automatic Detection:**
+
 - **macOS**: `pbcopy`
 - **Linux**: Automatically detects and uses the first available:
   - `xclip -selection clipboard`
@@ -84,6 +85,7 @@ export FZF_ACTION_CLIP_COPY_CMD="custom-clipboard-command"
 ```
 
 **Note**: On Linux, if no clipboard utility is found, you'll need to install one:
+
 ```bash
 # Debian/Ubuntu
 sudo apt install xclip
@@ -93,6 +95,24 @@ sudo dnf install xclip
 
 # Arch Linux
 sudo pacman -S xclip
+```
+
+### Editor Configuration
+
+The file edit action uses the `FZF_ACTION_EDITOR` environment variable with the following fallback chain:
+
+1. `FZF_ACTION_EDITOR` - Plugin-specific editor (if set)
+2. `EDITOR` - System default editor (if set)
+3. `vim` - Final fallback
+
+This allows you to use a different editor for fzf-action without changing your global `EDITOR` setting:
+
+```zsh
+# Use a specific editor for fzf-action
+export FZF_ACTION_EDITOR="code"
+
+# Or use your default editor
+export EDITOR="emacs"
 ```
 
 ## Usage
@@ -145,7 +165,7 @@ Press the key binding (e.g., `Ctrl+g f`) to display **all tracked and untracked 
 
 **Available Actions:**
 
-- **edit** (Default) - Edit file in your editor (uses `$EDITOR` or `vim`)
+- **edit** (Default) - Edit file in your editor (uses `$FZF_ACTION_EDITOR`, `$EDITOR`, or `vim`)
 - **append to edit buffer** - Insert file path into command line
 - **git add** - Stage the file
 - **git add -p** - Interactive staging (stage specific hunks)
