@@ -190,7 +190,7 @@ function fzf-action-git-branches-rebase-interactive() {
 function fzf-action-git-branches-create-from() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
     local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
-    echo -n "Enter new branch name: "
+    echo -n "Enter new branch name: " >&2
     read new_branch
 
     if [[ -z "$new_branch" ]]; then
@@ -200,14 +200,12 @@ function fzf-action-git-branches-create-from() {
     # Validate branch name (alphanumeric, slash, dash, underscore only)
     if [[ ! "$new_branch" =~ ^[a-zA-Z0-9/_-]+$ ]]; then
         echo "Error: Invalid branch name (use only letters, numbers, /, -, _)" >&2
-        zle reset-prompt
         return 1
     fi
 
     # Check if branch already exists
     if git show-ref --verify --quiet "refs/heads/$new_branch"; then
         echo "Error: Branch '$new_branch' already exists" >&2
-        zle reset-prompt
         return 1
     fi
 
@@ -236,15 +234,15 @@ function fzf-action-git-branches-diff-stat() {
 function fzf-action-git-branches-reset-hard() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
     local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
-    echo "WARNING: This will reset hard to branch: $branch"
-    echo -n "Are you sure? (y/N): "
+    echo "WARNING: This will reset hard to branch: $branch" >&2
+    echo -n "Are you sure? (y/N): " >&2
     read confirm
 
     if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
         BUFFER="git reset --hard '${safe_branch}'"
         zle accept-line
     else
-        echo "Cancelled"
+        echo "Cancelled" >&2
         zle reset-prompt
     fi
 }

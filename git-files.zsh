@@ -384,7 +384,6 @@ function fzf-action-git-files-copy-path() {
         zle accept-line
     else
         echo "Error: FZF_ACTION_CLIP_COPY_CMD is not set" >&2
-        zle reset-prompt
         return 1
     fi
 }
