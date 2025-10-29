@@ -8,6 +8,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2025-10-29
+
+### Added
+
+- Remote branch deletion support in git-branches actions
+  - Delete and delete-force actions now work with both local and remote branches
+  - Automatically detects remote branches and uses `git push --delete` command
+  - Proper sanitization for both remote and branch names
+
+### Fixed
+
+- User prompts and messages now visible in ZLE widgets
+  - Redirected all user-facing prompts and messages to stderr using `>&2`
+  - Fixed invisible prompts in `fzf-action-git-branches-create-from` (branch name input)
+  - Fixed invisible warnings in `fzf-action-git-branches-reset-hard` (confirmation prompts)
+  - Fixed invisible error messages in `fzf-action-git-files-copy-path`
+  - Removed unreachable `zle reset-prompt` calls after return statements
+- Single Ctrl+C press now exits fzf widgets
+  - Added explicit interrupt handling (exit code 130/SIGINT detection)
+  - Calls `zle send-break` to immediately abort ZLE widgets
+  - No longer requires pressing Ctrl+C twice to exit
+
 ## [0.1.4] - 2025-10-29
 
 ### Added
@@ -80,6 +102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[0.1.5]: https://github.com/byplayer/fzf-action/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/byplayer/fzf-action/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/byplayer/fzf-action/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/byplayer/fzf-action/compare/v0.1.1...v0.1.2
