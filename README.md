@@ -59,6 +59,42 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
 
    You can use any key combination you prefer.
 
+## Configuration
+
+### Clipboard Command
+
+The clipboard copy action uses the `FZF_ACTION_CLIP_COPY_CMD` environment variable. The plugin automatically detects and configures the appropriate clipboard command for your platform:
+
+**Automatic Detection:**
+- **macOS**: `pbcopy`
+- **Linux**: Automatically detects and uses the first available:
+  - `xclip -selection clipboard`
+  - `xsel --clipboard --input`
+  - `wl-copy` (Wayland)
+  - `clip.exe` (WSL)
+- **Windows** (Git Bash, MSYS2, Cygwin): `clip.exe`
+
+**Manual Override:**
+
+If you want to use a different command, set the variable in your `.zshrc` before loading the plugin:
+
+```zsh
+# Custom clipboard command
+export FZF_ACTION_CLIP_COPY_CMD="custom-clipboard-command"
+```
+
+**Note**: On Linux, if no clipboard utility is found, you'll need to install one:
+```bash
+# Debian/Ubuntu
+sudo apt install xclip
+
+# Fedora/RHEL
+sudo dnf install xclip
+
+# Arch Linux
+sudo pacman -S xclip
+```
+
 ## Usage
 
 > **Important**: These are ZLE widgets that integrate with the Zsh Line Editor. They must be invoked via key bindings and cannot be called directly from the command line.
@@ -122,7 +158,7 @@ Press the key binding (e.g., `Ctrl+g f`) to display **all tracked and untracked 
 - **git log --oneline** - Show one-line commit history
 - **cat** - Display file contents
 - **less** - View file in pager
-- **copy path to clipboard** - Copy file path to clipboard (macOS)
+- **copy path to clipboard** - Copy file path to clipboard
 - **git rm** - Remove the file from git
 
 ### File Status Display

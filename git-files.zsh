@@ -197,13 +197,20 @@ function fzf-action-git-files-less() {
     zle accept-line
 }
 
-# Action: Copy path to clipboard (macOS)
+# Action: Copy path to clipboard
 function fzf-action-git-files-copy-path() {
     local file=$(fzf-action-git-files-extract-path "$1")
     local git_base=$(git rev-parse --show-cdup)
-    echo -n "${git_base}${file}" | pbcopy
-    echo "Copied to clipboard: ${git_base}${file}"
-    zle reset-prompt
+    local full_path="${git_base}${file}"
+
+    if [[ -n "$FZF_ACTION_CLIP_COPY_CMD" ]]; then
+        BUFFER="echo -n '${full_path}' | ${FZF_ACTION_CLIP_COPY_CMD}"
+        zle accept-line
+    else
+        echo "Error: FZF_ACTION_CLIP_COPY_CMD is not set" >&2
+        zle reset-prompt
+        return 1
+    fi
 }
 
 # Main function: Git files action
