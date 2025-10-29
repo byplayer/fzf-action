@@ -1,9 +1,28 @@
 # Changelog
 
+<!-- markdownlint-configure-file { "MD024": { "siblings_only": true } } -->
+<!-- markdownlint-disable MD013 -->
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.1.3] - 2025-10-28
+
+### Added
+
+- New git file management source (`git-files.zsh`) with 15 file operations:
+  - Edit file in editor (default action)
+  - Append file path to edit buffer
+  - Git operations: add, add -p (interactive staging), reset, restore, checkout, rm
+  - Diff operations: diff, diff --stat
+  - Log operations: log, log --oneline
+  - View operations: cat, less
+  - Copy file path to clipboard (macOS)
+- Color-coded file status indicators: modified, staged, deleted, untracked, conflict
+- Smart file path extraction and sanitization for safe command execution
+- Support for both tracked and untracked files
 
 ## [0.1.2] - 2025-10-27
 
@@ -52,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[0.1.3]: https://github.com/byplayer/fzf-action/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/byplayer/fzf-action/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/byplayer/fzf-action/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/byplayer/fzf-action/releases/tag/v0.1.0

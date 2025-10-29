@@ -85,3 +85,31 @@ function fzf-action-core() {
 function fzf-action-strip-ansi() {
     echo "$1" | sed 's/\x1b\[[0-9;]*m//g'
 }
+
+# Initialize clipboard copy command if not set
+if [[ -z "$FZF_ACTION_CLIP_COPY_CMD" ]]; then
+    case "$(uname -s)" in
+        Darwin)
+            # macOS
+            FZF_ACTION_CLIP_COPY_CMD="pbcopy"
+            ;;
+        Linux)
+            # Linux - check for available clipboard commands
+            if command -v xclip >/dev/null 2>&1; then
+                FZF_ACTION_CLIP_COPY_CMD="xclip -selection clipboard"
+            elif command -v xsel >/dev/null 2>&1; then
+                FZF_ACTION_CLIP_COPY_CMD="xsel --clipboard --input"
+            elif command -v wl-copy >/dev/null 2>&1; then
+                # Wayland
+                FZF_ACTION_CLIP_COPY_CMD="wl-copy"
+            elif [[ -n "$WSL_DISTRO_NAME" ]] || grep -qi microsoft /proc/version 2>/dev/null; then
+                # WSL
+                FZF_ACTION_CLIP_COPY_CMD="clip.exe"
+            fi
+            ;;
+        CYGWIN*|MINGW*|MSYS*)
+            # Windows (Git Bash, MSYS2, Cygwin)
+            FZF_ACTION_CLIP_COPY_CMD="clip.exe"
+            ;;
+    esac
+fi
