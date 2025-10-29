@@ -49,7 +49,7 @@ function fzf-action-git-files-get-candidates() {
     while IFS= read -r file; do
         if [[ -z "${file_status[$file]}" ]]; then
             file_status[$file]="??"
-            files+=("${file} "$'\\033[35m[untracked]\\033[0m')
+            files+=("${file} "$'\033[35m[untracked]\033[0m')
         fi
     done < <(git ls-files --others --exclude-standard $git_base 2>/dev/null)
 
