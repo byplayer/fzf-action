@@ -256,14 +256,17 @@ function fzf-action-git-branches-delete() {
 
     # Check if it's a remote branch
     if [[ "$1" =~ "(remote)" ]]; then
-        echo "Cannot delete remote branches with this action"
-        echo "Use 'git push origin --delete $branch' manually"
-        zle reset-prompt
-        return 1
+        # Extract remote name and branch name from "remote/branch"
+        local remote="${branch%%/*}"
+        local branch_name="${branch#*/}"
+        local safe_remote=$(fzf-action-git-branches-sanitize "$remote")
+        local safe_branch_name=$(fzf-action-git-branches-sanitize "$branch_name")
+        BUFFER="git push --delete '${safe_remote}' '${safe_branch_name}'"
+        zle accept-line
+    else
+        BUFFER="git branch -d '${safe_branch}'"
+        zle accept-line
     fi
-
-    BUFFER="git branch -d '${safe_branch}'"
-    zle accept-line
 }
 
 # Action: Force delete branch
@@ -273,14 +276,17 @@ function fzf-action-git-branches-delete-force() {
 
     # Check if it's a remote branch
     if [[ "$1" =~ "(remote)" ]]; then
-        echo "Cannot delete remote branches with this action"
-        echo "Use 'git push origin --delete $branch' manually"
-        zle reset-prompt
-        return 1
+        # Extract remote name and branch name from "remote/branch"
+        local remote="${branch%%/*}"
+        local branch_name="${branch#*/}"
+        local safe_remote=$(fzf-action-git-branches-sanitize "$remote")
+        local safe_branch_name=$(fzf-action-git-branches-sanitize "$branch_name")
+        BUFFER="git push --delete '${safe_remote}' '${safe_branch_name}'"
+        zle accept-line
+    else
+        BUFFER="git branch -D '${safe_branch}'"
+        zle accept-line
     fi
-
-    BUFFER="git branch -D '${safe_branch}'"
-    zle accept-line
 }
 
 # Main function: Git branches action
