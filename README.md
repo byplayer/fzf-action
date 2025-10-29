@@ -149,8 +149,8 @@ Press the key binding (e.g., `Ctrl+g b`) to display **local branches only** in y
 - **diff** - Show diff between current and selected branch
 - **diff statistics** - Show diff statistics
 - **reset hard** - Hard reset to selected branch (with confirmation)
-- **delete** - Delete the selected local branch
-- **delete force** - Force delete the selected local branch
+- **delete** - Delete the selected branch (local: `git branch -d`, remote: `git push --delete`)
+- **delete force** - Force delete the selected branch (local: `git branch -D`, remote: `git push --delete`)
 
 ### Git Files
 
