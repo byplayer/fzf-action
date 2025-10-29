@@ -61,14 +61,8 @@ function fzf-action-git-files-extract-path() {
     local formatted="$1"
     # Strip ANSI codes first
     local clean=$(fzf-action-strip-ansi "$formatted")
-    # Remove status labels
-    clean=$(sed -e 's/\[modified\]$//' -e 's/\[staged\]$//' -e 's/\[staged|modified\]$//' \
-                -e 's/\[staged(add)\]$//' -e 's/\[add|modified\]$//' \
-                -e 's/\[deleted\]$//' -e 's/\[staged(del)\]$//' \
-                -e 's/\[untracked\]$//' -e 's/\[conflict\]$//' \
-                -e 's/\[[^]]*\]$//' <<< "$clean")
-    # Trim trailing whitespace
-    clean=$(sed -e 's/[[:space:]]*$//' <<< "$clean")
+    # Remove status label and trailing whitespace using ZSH built-ins
+    clean="${clean%% \[*\]}"  # Remove " [status]" from end
     echo "$clean"
 }
 
