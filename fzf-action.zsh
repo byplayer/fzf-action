@@ -34,6 +34,10 @@ function fzf-action-core() {
 
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
+        # If interrupted (Ctrl+C), send break signal to ZLE
+        if [[ $exit_code -eq 130 ]]; then
+            zle && zle send-break
+        fi
         return $exit_code
     fi
 
@@ -57,6 +61,15 @@ function fzf-action-core() {
                 --no-clear \
                 --layout=reverse \
                 --height=~100%)
+
+        local action_exit_code=$?
+        if [[ $action_exit_code -ne 0 ]]; then
+            # If interrupted (Ctrl+C), send break signal to ZLE
+            if [[ $action_exit_code -eq 130 ]]; then
+                zle && zle send-break
+            fi
+            return $action_exit_code
+        fi
 
         if [[ -z "$selected_action" ]]; then
             return 0
