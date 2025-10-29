@@ -75,7 +75,15 @@ function fzf-action-git-files-sanitize() {
 
 # Action: Edit file (default)
 function fzf-action-git-files-edit() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="${EDITOR:-vim} '${git_base}${safe_file}'"
@@ -84,14 +92,30 @@ function fzf-action-git-files-edit() {
 
 # Action: Append to edit buffer
 function fzf-action-git-files-append() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     LBUFFER="${LBUFFER}${file}"
     zle reset-prompt
 }
 
 # Action: Git add
 function fzf-action-git-files-add() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="git add '${git_base}${safe_file}'"
@@ -100,7 +124,15 @@ function fzf-action-git-files-add() {
 
 # Action: Git add -p (interactive staging)
 function fzf-action-git-files-add-patch() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="git add -p '${git_base}${safe_file}'"
@@ -109,7 +141,15 @@ function fzf-action-git-files-add-patch() {
 
 # Action: Git reset
 function fzf-action-git-files-reset() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="git reset '${git_base}${safe_file}'"
@@ -118,7 +158,15 @@ function fzf-action-git-files-reset() {
 
 # Action: Git restore
 function fzf-action-git-files-restore() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="git restore '${git_base}${safe_file}'"
@@ -127,7 +175,15 @@ function fzf-action-git-files-restore() {
 
 # Action: Git checkout
 function fzf-action-git-files-checkout() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="git checkout '${git_base}${safe_file}'"
@@ -136,7 +192,15 @@ function fzf-action-git-files-checkout() {
 
 # Action: Git rm
 function fzf-action-git-files-rm() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="git rm '${git_base}${safe_file}'"
@@ -145,7 +209,15 @@ function fzf-action-git-files-rm() {
 
 # Action: Git diff
 function fzf-action-git-files-diff() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="git diff '${git_base}${safe_file}'"
@@ -154,7 +226,15 @@ function fzf-action-git-files-diff() {
 
 # Action: Git diff --stat
 function fzf-action-git-files-diff-stat() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="git diff --stat '${git_base}${safe_file}'"
@@ -163,7 +243,15 @@ function fzf-action-git-files-diff-stat() {
 
 # Action: Git log
 function fzf-action-git-files-log() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="git log '${git_base}${safe_file}'"
@@ -172,7 +260,15 @@ function fzf-action-git-files-log() {
 
 # Action: Git log --oneline
 function fzf-action-git-files-log-oneline() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="git log --oneline '${git_base}${safe_file}'"
@@ -181,7 +277,15 @@ function fzf-action-git-files-log-oneline() {
 
 # Action: Cat file
 function fzf-action-git-files-cat() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="cat '${git_base}${safe_file}'"
@@ -190,7 +294,15 @@ function fzf-action-git-files-cat() {
 
 # Action: Less file
 function fzf-action-git-files-less() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local safe_file=$(fzf-action-git-files-sanitize "$file")
     local git_base=$(git rev-parse --show-cdup)
     BUFFER="less '${git_base}${safe_file}'"
@@ -199,7 +311,15 @@ function fzf-action-git-files-less() {
 
 # Action: Copy path to clipboard
 function fzf-action-git-files-copy-path() {
+    if [[ -z "$1" ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
     local file=$(fzf-action-git-files-extract-path "$1")
+    if [[ -z "$file" ]]; then
+        echo "Error: Could not extract file path" >&2
+        return 1
+    fi
     local git_base=$(git rev-parse --show-cdup)
     local full_path="${git_base}${file}"
 
