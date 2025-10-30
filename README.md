@@ -14,7 +14,50 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
 - **fzf-based interface**: Fast, intuitive fuzzy finding
 - **Git branch management**: Comprehensive branch operations with menu selection
 - **Git file management**: File operations with color-coded status indicators
+- **Git status management**: Quick operations on changed/staged files
 - **Extensible**: Easy to add new sources and actions
+
+## Available Widgets
+
+### 🌿 Git Branches
+
+**`fzf-action-git-branches-all`** - Browse and manage all git branches (local + remote)
+
+- Switch branches instantly with Enter
+- Merge, rebase, diff, and more with Tab menu
+- Color-coded current branch indicator
+- Perfect for: Quick branch switching, comparing branches, managing feature branches
+
+**`fzf-action-git-branches`** - Browse and manage local git branches only
+
+- Streamlined view of only local branches
+- Same powerful actions as the all-branches widget
+- Perfect for: Working within your local repository without remote clutter
+
+### 📁 Git Files
+
+**`fzf-action-git-files`** - Browse all tracked and untracked files in your repository
+
+- View all files with git status indicators
+- Edit, stage, diff, or view file history
+- Color-coded status labels (modified, staged, untracked, etc.)
+- Perfect for: Exploring the codebase, reviewing changes across the entire repository
+
+### 🔍 Git Status
+
+**`fzf-action-git-status`** (Add Mode) - Quick staging workflow for changed files
+
+- Shows only modified/staged/untracked files
+- Default action: Stage files instantly with Enter
+- Quick access to add, reset, restore, and diff
+- Perfect for: Rapid staging workflow, preparing commits, reviewing what changed
+
+**`fzf-action-git-status-edit-mode`** (Edit Mode) - Review and edit changed files
+
+- Shows only modified/staged/untracked files
+- Default action: Open files in your editor with Enter
+- Same operations as add mode, just editor-first
+- Perfect for: Reviewing changes before staging, fixing issues found in git status
 
 ## Requirements
 
@@ -45,6 +88,7 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
    source ~/.zsh.d/plugins/fzf-action/fzf-action.zsh
    source ~/.zsh.d/plugins/fzf-action/git-branches.zsh
    source ~/.zsh.d/plugins/fzf-action/git-files.zsh
+   source ~/.zsh.d/plugins/fzf-action/git-status.zsh
    ```
 
 3. **Add key bindings** (Required):
@@ -52,9 +96,11 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
    These functions are ZLE widgets and can only be used via key bindings. Add the following to your `.zshrc`:
 
    ```zsh
-   bindkey '^g^b' fzf-action-git-branches-all  # All branches (local + remote)
-   bindkey '^gb' fzf-action-git-branches       # Local branches only
-   bindkey '^gf' fzf-action-git-files          # Git files
+   bindkey '^g^b' fzf-action-git-branches-all     # All branches (local + remote)
+   bindkey '^gb' fzf-action-git-branches          # Local branches only
+   bindkey '^gf' fzf-action-git-files             # Git files
+   bindkey '^gs' fzf-action-git-status            # Git status (add mode)
+   bindkey '^g^s' fzf-action-git-status-edit-mode # Git status (edit mode)
    ```
 
    You can use any key combination you prefer.
@@ -181,6 +227,44 @@ Press the key binding (e.g., `Ctrl+g f`) to display **all tracked and untracked 
 - **copy path to clipboard** - Copy file path to clipboard
 - **git rm** - Remove the file from git
 
+### Git Status
+
+Press the key binding (e.g., `Ctrl+g s` for add mode or `Ctrl+g Ctrl+s` for edit mode) to display **only changed, staged, and untracked files** from git status.
+
+**Two Modes:**
+
+- **Add Mode** (`fzf-action-git-status`): Default action is "git add" - optimized for staging workflow
+- **Edit Mode** (`fzf-action-git-status-edit-mode`): Default action is "edit" - optimized for reviewing/editing workflow
+
+**Workflow:**
+
+1. **Select a file**: Use arrow keys or type to filter files
+2. **Choose action**:
+   - Press `ENTER`: Execute default action (git add or edit, depending on mode)
+   - Press `TAB`: Open action menu to select from available operations
+
+**Available Actions (Add Mode):**
+
+- **git add** (Default) - Stage the file
+- **git add -p** - Interactive staging (stage specific hunks)
+- **git reset** - Unstage the file
+- **git restore** - Restore working tree changes
+- **edit** - Edit file in your editor
+- **git diff** - Show diff for the file
+- **append to edit buffer** - Insert file path into command line
+- **git rm** - Remove the file from git
+
+**Available Actions (Edit Mode):**
+
+- **edit** (Default) - Edit file in your editor
+- **git add** - Stage the file
+- **git add -p** - Interactive staging (stage specific hunks)
+- **git reset** - Unstage the file
+- **git diff** - Show diff for the file
+- **git restore** - Restore working tree changes
+- **append to edit buffer** - Insert file path into command line
+- **git rm** - Remove the file from git
+
 ### File Status Display
 
 Files are displayed with color-coded status indicators:
@@ -238,18 +322,35 @@ Files are displayed with color-coded status indicators:
 # or Press TAB and choose "git diff" to see changes
 ```
 
+### Git status example
+
+```zsh
+# Press Ctrl+g s for add mode (or your configured key binding)
+# Select a modified file
+# Press ENTER to stage it (git add)
+# or Press TAB and choose another action
+
+# Or press Ctrl+g Ctrl+s for edit mode
+# Select a file to review
+# Press ENTER to edit it
+```
+
 ### Key binding example
 
 ```zsh
 # Add to your .zshrc
-bindkey '^g^b' fzf-action-git-branches-all  # Ctrl+g Ctrl+b - all branches
-bindkey '^gb' fzf-action-git-branches       # Ctrl+g b - local branches only
-bindkey '^gf' fzf-action-git-files          # Ctrl+g f - git files
+bindkey '^g^b' fzf-action-git-branches-all     # Ctrl+g Ctrl+b - all branches
+bindkey '^gb' fzf-action-git-branches          # Ctrl+g b - local branches only
+bindkey '^gf' fzf-action-git-files             # Ctrl+g f - git files
+bindkey '^gs' fzf-action-git-status            # Ctrl+g s - git status (add mode)
+bindkey '^g^s' fzf-action-git-status-edit-mode # Ctrl+g Ctrl+s - git status (edit mode)
 
 # Now you can press:
 # - Ctrl+g Ctrl+b to open all branches menu
 # - Ctrl+g b to open local branches menu
 # - Ctrl+g f to open git files menu
+# - Ctrl+g s to open git status menu (add mode)
+# - Ctrl+g Ctrl+s to open git status menu (edit mode)
 ```
 
 ## Architecture
@@ -270,6 +371,12 @@ The plugin consists of these main components:
    - File operation handlers (edit, stage, diff, log, etc.)
    - Color-coded status indicators
    - File path sanitization for safe command execution
+
+4. **git-status.zsh**: Git status file management implementation
+   - Show only changed/staged/untracked files from git status
+   - Two modes: add-focused and edit-focused workflows
+   - Quick staging and editing operations
+   - Same color-coded status indicators as git-files
 
 ## Extending
 

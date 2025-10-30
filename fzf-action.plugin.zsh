@@ -9,3 +9,6 @@ source "${0:A:h}/git-branches.zsh"
 
 # Load git files source
 source "${0:A:h}/git-files.zsh"
+
+# Load git status source
+source "${0:A:h}/git-status.zsh"
