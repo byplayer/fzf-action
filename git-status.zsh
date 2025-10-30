@@ -33,8 +33,13 @@ function fzf-action-git-status-get-candidates() {
             " D") status_label=$'\033[31m[deleted]\033[0m' ;;
             "D ") status_label=$'\033[31m[staged(del)]\033[0m' ;;
             "??") status_label=$'\033[35m[untracked]\033[0m' ;;
-            "UU") status_label=$'\033[31;1m[conflict]\033[0m' ;;
-            "AA") status_label=$'\033[31;1m[conflict]\033[0m' ;;
+            "R ") status_label=$'\033[34m[renamed]\033[0m' ;;
+            " R") status_label=$'\033[34m[renamed]\033[0m' ;;
+            "RM") status_label=$'\033[36m[renamed|modified]\033[0m' ;;
+            "C ") status_label=$'\033[34m[copied]\033[0m' ;;
+            " C") status_label=$'\033[34m[copied]\033[0m' ;;
+            "CM") status_label=$'\033[36m[copied|modified]\033[0m' ;;
+            "UU"|"AA"|"DD"|"AU"|"UD"|"UA"|"DU") status_label=$'\033[31;1m[conflict]\033[0m' ;;
             *) status_label=$'\033[90m['"$git_status"$']\033[0m' ;;
         esac
 
@@ -61,24 +66,34 @@ function fzf-action-git-status-sanitize() {
     printf '%s' "${file//\'/\'\\\'\'}"
 }
 
-# Action: Edit file (default)
-function fzf-action-git-status-edit() {
+# Validate and prepare file path for git operations
+# Returns: git_base + sanitized file path, or returns 1 on error
+function fzf-action-git-status-prepare-file() {
     if [[ -z "$1" ]]; then
         echo "Error: No file specified" >&2
         return 1
     fi
+
     local git_base
     git_base=$(git rev-parse --show-cdup 2>/dev/null) || {
         echo "Error: Not in a git repository" >&2
         return 1
     }
+
     local file=$(fzf-action-git-status-extract-path "$1")
     if [[ -z "$file" ]]; then
         echo "Error: Could not extract file path" >&2
         return 1
     fi
+
     local safe_file=$(fzf-action-git-status-sanitize "$file")
-    BUFFER="${FZF_ACTION_EDITOR:-${EDITOR:-vim}} '${git_base}${safe_file}'"
+    echo "${git_base}${safe_file}"
+}
+
+# Action: Edit file (default)
+function fzf-action-git-status-edit() {
+    local file_path=$(fzf-action-git-status-prepare-file "$1") || return 1
+    BUFFER="${FZF_ACTION_EDITOR:-${EDITOR:-vim}} '${file_path}'"
     zle accept-line
 }
 
@@ -99,127 +114,43 @@ function fzf-action-git-status-append() {
 
 # Action: Git add
 function fzf-action-git-status-add() {
-    if [[ -z "$1" ]]; then
-        echo "Error: No file specified" >&2
-        return 1
-    fi
-    local git_base
-    git_base=$(git rev-parse --show-cdup 2>/dev/null) || {
-        echo "Error: Not in a git repository" >&2
-        return 1
-    }
-    local file=$(fzf-action-git-status-extract-path "$1")
-    if [[ -z "$file" ]]; then
-        echo "Error: Could not extract file path" >&2
-        return 1
-    fi
-    local safe_file=$(fzf-action-git-status-sanitize "$file")
-    BUFFER="git add '${git_base}${safe_file}'"
+    local file_path=$(fzf-action-git-status-prepare-file "$1") || return 1
+    BUFFER="git add '${file_path}'"
     zle accept-line
 }
 
 # Action: Git add -p (interactive staging)
 function fzf-action-git-status-add-patch() {
-    if [[ -z "$1" ]]; then
-        echo "Error: No file specified" >&2
-        return 1
-    fi
-    local git_base
-    git_base=$(git rev-parse --show-cdup 2>/dev/null) || {
-        echo "Error: Not in a git repository" >&2
-        return 1
-    }
-    local file=$(fzf-action-git-status-extract-path "$1")
-    if [[ -z "$file" ]]; then
-        echo "Error: Could not extract file path" >&2
-        return 1
-    fi
-    local safe_file=$(fzf-action-git-status-sanitize "$file")
-    BUFFER="git add -p '${git_base}${safe_file}'"
+    local file_path=$(fzf-action-git-status-prepare-file "$1") || return 1
+    BUFFER="git add -p '${file_path}'"
     zle accept-line
 }
 
 # Action: Git reset
 function fzf-action-git-status-reset() {
-    if [[ -z "$1" ]]; then
-        echo "Error: No file specified" >&2
-        return 1
-    fi
-    local git_base
-    git_base=$(git rev-parse --show-cdup 2>/dev/null) || {
-        echo "Error: Not in a git repository" >&2
-        return 1
-    }
-    local file=$(fzf-action-git-status-extract-path "$1")
-    if [[ -z "$file" ]]; then
-        echo "Error: Could not extract file path" >&2
-        return 1
-    fi
-    local safe_file=$(fzf-action-git-status-sanitize "$file")
-    BUFFER="git reset '${git_base}${safe_file}'"
+    local file_path=$(fzf-action-git-status-prepare-file "$1") || return 1
+    BUFFER="git reset '${file_path}'"
     zle accept-line
 }
 
 # Action: Git restore
 function fzf-action-git-status-restore() {
-    if [[ -z "$1" ]]; then
-        echo "Error: No file specified" >&2
-        return 1
-    fi
-    local git_base
-    git_base=$(git rev-parse --show-cdup 2>/dev/null) || {
-        echo "Error: Not in a git repository" >&2
-        return 1
-    }
-    local file=$(fzf-action-git-status-extract-path "$1")
-    if [[ -z "$file" ]]; then
-        echo "Error: Could not extract file path" >&2
-        return 1
-    fi
-    local safe_file=$(fzf-action-git-status-sanitize "$file")
-    BUFFER="git restore '${git_base}${safe_file}'"
+    local file_path=$(fzf-action-git-status-prepare-file "$1") || return 1
+    BUFFER="git restore '${file_path}'"
     zle accept-line
 }
 
 # Action: Git diff
 function fzf-action-git-status-diff() {
-    if [[ -z "$1" ]]; then
-        echo "Error: No file specified" >&2
-        return 1
-    fi
-    local git_base
-    git_base=$(git rev-parse --show-cdup 2>/dev/null) || {
-        echo "Error: Not in a git repository" >&2
-        return 1
-    }
-    local file=$(fzf-action-git-status-extract-path "$1")
-    if [[ -z "$file" ]]; then
-        echo "Error: Could not extract file path" >&2
-        return 1
-    fi
-    local safe_file=$(fzf-action-git-status-sanitize "$file")
-    BUFFER="git diff '${git_base}${safe_file}'"
+    local file_path=$(fzf-action-git-status-prepare-file "$1") || return 1
+    BUFFER="git diff '${file_path}'"
     zle accept-line
 }
 
 # Action: Git rm
 function fzf-action-git-status-rm() {
-    if [[ -z "$1" ]]; then
-        echo "Error: No file specified" >&2
-        return 1
-    fi
-    local git_base
-    git_base=$(git rev-parse --show-cdup 2>/dev/null) || {
-        echo "Error: Not in a git repository" >&2
-        return 1
-    }
-    local file=$(fzf-action-git-status-extract-path "$1")
-    if [[ -z "$file" ]]; then
-        echo "Error: Could not extract file path" >&2
-        return 1
-    fi
-    local safe_file=$(fzf-action-git-status-sanitize "$file")
-    BUFFER="git rm '${git_base}${safe_file}'"
+    local file_path=$(fzf-action-git-status-prepare-file "$1") || return 1
+    BUFFER="git rm '${file_path}'"
     zle accept-line
 }
 
