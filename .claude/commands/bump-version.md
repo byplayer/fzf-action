@@ -1,3 +1,7 @@
+---
+description: Automate version bumps following semantic versioning (major/minor/patch)
+---
+
 # Bump Version Workflow
 
 <!-- markdownlint-disable MD013 -->
@@ -8,6 +12,46 @@ arguments after this command in the format:
 
 Extract the bump type (major, minor, or patch) and optional description from the
 arguments following this slash command.
+
+## Usage
+
+### Command Format
+
+```bash
+/bump-version <major|minor|patch> [description]
+```
+
+### Arguments
+
+- `<major|minor|patch>` (required): The type of version bump to perform
+  - `major`: Increment MAJOR version, reset MINOR and PATCH to 0 (e.g., 0.1.6 → 1.0.0)
+  - `minor`: Increment MINOR version, reset PATCH to 0 (e.g., 0.1.6 → 0.2.0)
+  - `patch`: Increment PATCH version (e.g., 0.1.6 → 0.1.7)
+- `[description]` (optional): Additional description for the release
+
+### Examples
+
+```bash
+# Patch version bump (bug fixes, small improvements)
+/bump-version patch
+
+# Minor version bump (new features, non-breaking changes)
+/bump-version minor
+
+# Major version bump (breaking changes)
+/bump-version major
+
+# With optional description
+/bump-version patch "Fix authentication bug"
+```
+
+### Version Numbering (Semantic Versioning)
+
+This project follows [Semantic Versioning](https://semver.org/):
+
+- **MAJOR** version when you make incompatible API changes
+- **MINOR** version when you add functionality in a backward compatible manner
+- **PATCH** version when you make backward compatible bug fixes
 
 ## Prerequisites Check
 
