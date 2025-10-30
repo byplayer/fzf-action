@@ -104,6 +104,15 @@ Automatically generate changelog entries from git commits since the last version
    - {fix descriptions from commits}
    ```
 
+4. **Add version diff link:**
+   At the bottom of CHANGELOG.md, after the `---` separator and before the existing version links, add the new version's diff link:
+
+   ```markdown
+   [{NEW_VERSION}]: https://github.com/byplayer/fzf-action/compare/v{CURRENT_VERSION}...v{NEW_VERSION}
+   ```
+
+   This allows users to click on the version number to view the full diff on GitHub.
+
 **Important:**
 
 - Use today's date in YYYY-MM-DD format
