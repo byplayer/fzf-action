@@ -8,6 +8,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2025-10-30
+
+### Added
+
+- New git-status widget with dual-mode workflow
+  - **Add Mode** (`fzf-action-git-status`): Quick staging workflow with "git add" as default action
+  - **Edit Mode** (`fzf-action-git-status-edit-mode`): Review workflow with "edit" as default action
+  - Shows only changed/staged/untracked files from git status (focused view)
+  - 8 file operations: add, add -p, reset, restore, edit, diff, append, rm
+  - Color-coded status indicators for all git status codes (modified, staged, renamed, copied, conflict, etc.)
+  - Comprehensive documentation with "Available Widgets" section for newcomers
+  - Auto-loading support via plugin system
+
+### Changed
+
+- Improved git-status.zsh code quality and maintainability
+  - Extracted common validation logic into `fzf-action-git-status-prepare-file()` helper function
+  - Reduced code duplication by consolidating file validation, git repo check, path extraction, and sanitization
+  - Reduced file from 294 to 225 lines (-69 lines, -23% reduction)
+  - Added support for all git status codes: renamed (R), copied (C), and all conflict variants (DD, AU, UD, UA, DU)
+  - All action functions now follow DRY principle with single source of validation logic
+
 ## [0.1.7] - 2025-10-30
 
 ### Changed
@@ -131,6 +153,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[1.0.0]: https://github.com/byplayer/fzf-action/compare/v0.1.7...v1.0.0
 [0.1.7]: https://github.com/byplayer/fzf-action/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/byplayer/fzf-action/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/byplayer/fzf-action/compare/v0.1.4...v0.1.5
