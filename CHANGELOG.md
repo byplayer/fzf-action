@@ -8,6 +8,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2025-10-30
+
+### Added
+
+- Automated version bump slash command (`/bump-version`)
+  - Accepts major/minor/patch arguments for semantic versioning
+  - Automatically calculates next version from VERSION file
+  - Updates VERSION, README.md badge, and CHANGELOG.md
+  - Creates release branch and pull request with proper formatting
+  - Follows conventional commits and semver standards
+
+### Fixed
+
+- Terminal history preservation during fzf selection
+  - Removed `--no-clear` flags and explicit screen clearing
+  - Terminal output and command history now visible after selections
+  - Improves usability by maintaining terminal context
+
 ## [0.1.5] - 2025-10-29
 
 ### Added

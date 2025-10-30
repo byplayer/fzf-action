@@ -67,30 +67,51 @@ Edit `README.md` line 5 to update the version badge:
 
 ### Step 5: Update CHANGELOG.md
 
-Ask the user for the specific changes to document. Then add a new section at the
-top of CHANGELOG.md (after the header, before the previous version section):
+Automatically generate changelog entries from git commits since the last version:
 
-```markdown
-## [{NEW_VERSION}] - {TODAY_DATE}
+1. **Get commit history since last version:**
 
-### Added
+   ```bash
+   git log --format="%h %s%n%b" v{CURRENT_VERSION}..HEAD --no-merges
+   ```
 
-- {changes from user}
+2. **Analyze commits and categorize changes:**
+   - Look for conventional commit prefixes or emoji in commit subjects:
+     - `✨ feat:` or `feat:` → **Added** section
+     - `🐛 fix:` or `fix:` → **Fixed** section
+     - `♻️ refactor:`, `⚡ perf:`, `🎨 style:` → **Changed** section
+     - `📝 docs:` → **Changed** section (documentation)
+     - Other commits → Decide based on commit message content
+   - Extract the meaningful description from each commit
+   - Include details from commit bodies when relevant (bullet points from "How does it address the issue?" section)
 
-### Changed
+3. **Generate changelog entry:**
+   Add a new section at the top of CHANGELOG.md (after the header, before the previous version section):
 
-- {changes from user}
+   ```markdown
+   ## [{NEW_VERSION}] - {TODAY_DATE}
 
-### Fixed
+   ### Added
 
-- {changes from user}
-```
+   - {feature descriptions from commits}
+
+   ### Changed
+
+   - {change descriptions from commits}
+
+   ### Fixed
+
+   - {fix descriptions from commits}
+   ```
 
 **Important:**
 
 - Use today's date in YYYY-MM-DD format
 - Only include sections (Added/Changed/Fixed) that have actual content
-- Remove empty sections
+- Remove empty sections if no commits of that type exist
+- Summarize related commits into concise bullet points
+- Focus on user-facing changes, not internal refactoring details
+- Use the commit message bodies to provide additional context when available
 
 ### Step 6: Commit Changes
 
