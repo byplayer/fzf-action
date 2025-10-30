@@ -29,7 +29,6 @@ function fzf-action-core() {
             --header="ENTER: default action | TAB: select action" \
             --preview-window=right:50% \
             --border \
-            --no-clear \
             --layout=reverse)
 
     local exit_code=$?
@@ -58,7 +57,6 @@ function fzf-action-core() {
         selected_action=$(printf "%s\n" "${action_descriptions[@]}" | \
             fzf --header="Select action for: $candidate" \
                 --border \
-                --no-clear \
                 --layout=reverse \
                 --height=~100%)
 
@@ -83,9 +81,6 @@ function fzf-action-core() {
             fi
         done
     fi
-
-    # Clear screen before executing action
-    zle && zle clear-screen
 
     # Execute the selected action
     local action_func="${actions[$action_index]}"
