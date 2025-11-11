@@ -14,11 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - New command history widget (`command-history.zsh`) with fzf-based selection
   - **Execute Mode** (`fzf-action-command-history`): Select from shell history with "execute" as default action
-  - Lists full command history from the current session using `fc -rl 1`
+  - Lists command history with configurable limit (default: 1000 entries)
+  - Configurable via `FZF_ACTION_HISTORY_LIMIT` environment variable
   - 2 actions available:
     - Execute command (default) - runs the selected command immediately
     - Append to edit buffer - adds the command to current input for editing
-  - Smart command extraction that strips history line numbers and formatting
+  - Smart command extraction that handles multi-digit line numbers correctly
+  - Proper error handling and return code propagation
+  - Graceful handling of empty history
+  - Comprehensive documentation in README.md with usage examples
   - Integrated into plugin system for auto-loading
 
 ## [1.0.0] - 2025-10-30
