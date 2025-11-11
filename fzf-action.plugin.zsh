@@ -12,3 +12,6 @@ source "${0:A:h}/git-files.zsh"
 
 # Load git status source
 source "${0:A:h}/git-status.zsh"
+
+# Load command history source
+source "${0:A:h}/command-history.zsh"
