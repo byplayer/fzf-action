@@ -15,6 +15,7 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
 - **Git branch management**: Comprehensive branch operations with menu selection
 - **Git file management**: File operations with color-coded status indicators
 - **Git status management**: Quick operations on changed/staged files
+- **Command history**: Search and execute commands from shell history
 - **Extensible**: Easy to add new sources and actions
 
 ## Available Widgets
@@ -59,6 +60,16 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
 - Same operations as add mode, just editor-first
 - Perfect for: Reviewing changes before staging, fixing issues found in git status
 
+### ⏱️ Command History
+
+**`fzf-action-command-history`** - Search and execute commands from shell history
+
+- Browse your command history with fuzzy search
+- Default action: Execute selected command immediately with Enter
+- Append mode to edit commands before execution
+- Configurable history limit (default: 1000 commands)
+- Perfect for: Quickly reusing previous commands, finding that command you ran last week
+
 ## Requirements
 
 - ZSH
@@ -89,6 +100,7 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
    source ~/.zsh.d/plugins/fzf-action/git-branches.zsh
    source ~/.zsh.d/plugins/fzf-action/git-files.zsh
    source ~/.zsh.d/plugins/fzf-action/git-status.zsh
+   source ~/.zsh.d/plugins/fzf-action/command-history.zsh
    ```
 
 3. **Add key bindings** (Required):
@@ -101,11 +113,23 @@ A ZSH plugin that provides zaw-like action selection menus using fzf.
    bindkey '^gf' fzf-action-git-files             # Git files
    bindkey '^gs' fzf-action-git-status            # Git status (add mode)
    bindkey '^g^s' fzf-action-git-status-edit-mode # Git status (edit mode)
+   bindkey '^r' fzf-action-command-history        # Command history
    ```
 
-   You can use any key combination you prefer.
+   You can use any key combination you prefer. The `^r` binding for command history replaces the default Ctrl-R reverse search.
 
 ## Configuration
+
+### Command History Limit
+
+The command history widget limits the number of history entries to improve performance. You can configure this limit:
+
+```zsh
+# Set custom history limit (default: 1000)
+export FZF_ACTION_HISTORY_LIMIT=500
+```
+
+Set to a higher value if you want to search through more history, or lower if you have performance concerns.
 
 ### Clipboard Command
 
@@ -335,6 +359,31 @@ Files are displayed with color-coded status indicators:
 # Press ENTER to edit it
 ```
 
+### Command History
+
+Press the key binding (e.g., `Ctrl+r`) to search through your shell command history.
+
+**Workflow:**
+
+1. **Select a command**: Use arrow keys or type to filter commands
+2. **Choose action**:
+   - Press `ENTER`: Execute the command immediately (default)
+   - Press `TAB`: Open action menu to select from available operations
+
+**Available Actions:**
+
+- **execute command** (Default) - Run the selected command immediately
+- **append to edit buffer** - Add the command to your current input for editing before execution
+
+**Example:**
+
+```zsh
+# Press Ctrl+r (or your configured key binding)
+# Type to search: "docker"
+# Press ENTER to execute the command
+# or Press TAB and choose "append to edit buffer" to edit it first
+```
+
 ### Key binding example
 
 ```zsh
@@ -344,6 +393,7 @@ bindkey '^gb' fzf-action-git-branches          # Ctrl+g b - local branches only
 bindkey '^gf' fzf-action-git-files             # Ctrl+g f - git files
 bindkey '^gs' fzf-action-git-status            # Ctrl+g s - git status (add mode)
 bindkey '^g^s' fzf-action-git-status-edit-mode # Ctrl+g Ctrl+s - git status (edit mode)
+bindkey '^r' fzf-action-command-history        # Ctrl+r - command history
 
 # Now you can press:
 # - Ctrl+g Ctrl+b to open all branches menu
@@ -351,6 +401,7 @@ bindkey '^g^s' fzf-action-git-status-edit-mode # Ctrl+g Ctrl+s - git status (edi
 # - Ctrl+g f to open git files menu
 # - Ctrl+g s to open git status menu (add mode)
 # - Ctrl+g Ctrl+s to open git status menu (edit mode)
+# - Ctrl+r to open command history search
 ```
 
 ## Architecture
@@ -377,6 +428,12 @@ The plugin consists of these main components:
    - Two modes: add-focused and edit-focused workflows
    - Quick staging and editing operations
    - Same color-coded status indicators as git-files
+
+5. **command-history.zsh**: Command history management implementation
+   - Browse and search shell command history
+   - Execute or append commands to edit buffer
+   - Configurable history limit for performance
+   - Smart command extraction from formatted history output
 
 ## Extending
 

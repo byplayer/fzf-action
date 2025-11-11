@@ -3,11 +3,11 @@
 
 # Get command history with formatting
 function fzf-action-command-history-get-candidates() {
-    local selected
     setopt localoptions noglobsubst noposixbuiltins pipefail 2> /dev/null
 
-    # Get history with line numbers (similar to fc -rl 1)
-    fc -rl 1
+    # Get history with line numbers, configurable limit (default: 1000)
+    local history_limit=${FZF_ACTION_HISTORY_LIMIT:-1000}
+    fc -rl 1 $history_limit
 }
 
 # Extract clean command from formatted output
@@ -15,11 +15,13 @@ function fzf-action-command-history-extract-command() {
     local formatted="$1"
     # Strip ANSI codes first
     local clean=$(fzf-action-strip-ansi "$formatted")
-    # Remove leading number and whitespace using ZSH built-ins
-    # Format is typically: "  123  command here"
-    clean="${clean#${clean%%[! ]*}}"  # Remove leading whitespace
-    clean="${clean#*[0-9] }"           # Remove number and following space
-    clean="${clean#${clean%%[! ]*}}"  # Remove any remaining leading whitespace
+    # Remove leading number and whitespace using ZSH regex matching
+    # Format is typically: "  123  command here" or "581  ssh-add --help"
+    # Enable extended globbing for pattern matching
+    setopt localoptions extendedglob
+    # Remove leading whitespace, then line number and following spaces
+    clean="${clean##[[:space:]]#}"                 # Remove leading whitespace
+    clean="${clean##[0-9]##[[:space:]]##}"         # Remove all digits and following spaces
     echo "$clean"
 }
 
@@ -59,6 +61,7 @@ function fzf-action-command-history() {
 
     if [[ -z "$candidates" ]]; then
         echo "No command history available" >&2
+        zle reset-prompt
         return 1
     fi
 
@@ -73,6 +76,14 @@ function fzf-action-command-history() {
     )
 
     fzf-action-core "$candidates" "$(printf "%s\n" "${actions[@]}")" "$(printf "%s\n" "${action_descriptions[@]}")" 1
+    local result=$?
+
+    # Reset prompt if action was cancelled or failed
+    if [[ $result -ne 0 ]]; then
+        zle reset-prompt
+    fi
+
+    return $result
 }
 
 # Create ZLE widget for key binding
