@@ -8,6 +8,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-11-11
+
+### Added
+
+- New command history widget (`command-history.zsh`) with fzf-based selection
+  - **Execute Mode** (`fzf-action-command-history`): Select from shell history with "execute" as default action
+  - Lists full command history from the current session using `fc -rl 1`
+  - 2 actions available:
+    - Execute command (default) - runs the selected command immediately
+    - Append to edit buffer - adds the command to current input for editing
+  - Smart command extraction that strips history line numbers and formatting
+  - Integrated into plugin system for auto-loading
+
 ## [1.0.0] - 2025-10-30
 
 ### Added
@@ -153,6 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[1.1.0]: https://github.com/byplayer/fzf-action/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/byplayer/fzf-action/compare/v0.1.7...v1.0.0
 [0.1.7]: https://github.com/byplayer/fzf-action/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/byplayer/fzf-action/compare/v0.1.5...v0.1.6
