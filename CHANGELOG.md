@@ -8,6 +8,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-11-12
+
+### Fixed
+
+- Fixed command extraction in command-history widget to handle asterisk-marked entries
+  - History entries with `*` after the number (e.g., `1525* ssh command`) now parse correctly
+  - The asterisk indicates currently executing commands in ZSH history
+  - Updated pattern matching to include optional asterisk: `${clean##[0-9]##[*]#[[:space:]]##}`
+
 ## [1.1.0] - 2025-11-11
 
 ### Added
