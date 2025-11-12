@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD013 -->
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.2-blue.svg)](CHANGELOG.md)
 
 A ZSH plugin that provides zaw-like action selection menus using fzf.
 
