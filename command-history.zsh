@@ -21,7 +21,7 @@ function fzf-action-command-history-extract-command() {
     setopt localoptions extendedglob
     # Remove leading whitespace, then line number (with optional *) and following spaces
     clean="${clean##[[:space:]]#}"                 # Remove leading whitespace
-    clean="${clean##[0-9]##[*]#[[:space:]]##}"     # Remove digits, optional *, and following spaces
+    clean="${clean##[0-9]##(\*|)[[:space:]]##}"    # Remove digits, optional *, and following spaces
     echo "$clean"
 }
 
