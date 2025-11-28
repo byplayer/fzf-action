@@ -8,6 +8,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-11-28
+
+### Added
+
+- Configurable fzf sort scheme for command history search
+  - Added `FZF_ACTION_HISTORY_OPTIONS` environment variable with default value `--scheme=history`
+  - Provides better matching and ranking for historical commands
+  - Extended `fzf-action-core()` to accept extra fzf options as 5th parameter
+  - Users can customize the sort order by setting the environment variable
+
+### Changed
+
+- Security improvement: replaced eval with array-based fzf command construction
+  - Eliminates security risks from user-controlled input in `FZF_ACTION_HISTORY_OPTIONS`
+  - Uses ZSH's `(z)` flag for proper shell word splitting
+  - Uses ZSH's `(Q)` flag for unquoting to handle quoted strings
+  - Properly handles multiple options, option values with spaces, and complex option combinations
+  - Added documentation about option format in README
+
 ## [1.1.3] - 2025-11-13
 
 ### Fixed
@@ -193,6 +212,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[1.2.0]: https://github.com/byplayer/fzf-action/compare/v1.1.3...v1.2.0
 [1.1.3]: https://github.com/byplayer/fzf-action/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/byplayer/fzf-action/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/byplayer/fzf-action/compare/v1.1.0...v1.1.1
