@@ -24,13 +24,21 @@ function fzf-action-core() {
 
     # Select candidate with fzf (expect TAB for action selection or ENTER for default)
     local selected
-    local fzf_cmd="fzf --ansi --expect=tab"
-    fzf_cmd="$fzf_cmd --header=\"ENTER: default action | TAB: select action\""
-    fzf_cmd="$fzf_cmd --preview-window=right:50% --border --layout=reverse"
+    local -a fzf_cmd=(
+        fzf
+        --ansi
+        --expect=tab
+        --header="ENTER: default action | TAB: select action"
+        --preview-window=right:50%
+        --border
+        --layout=reverse
+    )
     if [[ -n "$extra_fzf_options" ]]; then
-        fzf_cmd="$fzf_cmd $extra_fzf_options"
+        # Parse extra options using ZSH's shell word splitting (z flag)
+        # and unquoting (Q flag) to properly handle quoted strings
+        fzf_cmd+=("${(@Q)${(z)extra_fzf_options}}")
     fi
-    selected=$(printf "%s\n" "${candidates[@]}" | eval "$fzf_cmd")
+    selected=$(printf "%s\n" "${candidates[@]}" | "${fzf_cmd[@]}")
 
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then

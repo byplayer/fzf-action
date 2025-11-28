@@ -145,11 +145,16 @@ export FZF_ACTION_HISTORY_OPTIONS="--scheme=history --exact"
 # Use default fzf scoring instead of history-optimized scoring
 export FZF_ACTION_HISTORY_OPTIONS="--scheme=default"
 
+# Options with values containing spaces should be quoted
+export FZF_ACTION_HISTORY_OPTIONS="--scheme=history --prompt='History> '"
+
 # Disable additional options (use only the core fzf-action options)
 export FZF_ACTION_HISTORY_OPTIONS=""
 ```
 
 The `--scheme=history` option tells fzf to use a scoring algorithm optimized for command history, which typically provides better results when searching through shell commands.
+
+**Note**: Options are parsed using shell word splitting, so you can use quotes for option values containing spaces. Multiple options should be separated by spaces.
 
 ### Clipboard Command
 
