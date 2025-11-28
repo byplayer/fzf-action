@@ -75,7 +75,14 @@ function fzf-action-command-history() {
         "append to edit buffer"
     )
 
-    fzf-action-core "$candidates" "$(printf "%s\n" "${actions[@]}")" "$(printf "%s\n" "${action_descriptions[@]}")" 1
+    # Use environment variable for fzf options (default: --scheme=history)
+    local fzf_options="${FZF_ACTION_HISTORY_OPTIONS:---scheme=history}"
+
+    fzf-action-core "$candidates" \
+        "$(printf "%s\n" "${actions[@]}")" \
+        "$(printf "%s\n" "${action_descriptions[@]}")" \
+        1 \
+        "$fzf_options"
     local result=$?
 
     # Reset prompt if action was cancelled or failed
