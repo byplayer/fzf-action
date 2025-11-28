@@ -2,12 +2,13 @@
 # fzf-action.zsh - ZSH plugin for fzf-based action selection menus
 
 # Core function to handle fzf action workflow
-# Usage: fzf-action <candidates> <actions> <action_descriptions>
+# Usage: fzf-action-core <candidates> <actions> <action_descriptions> [default_action] [extra_fzf_options]
 function fzf-action-core() {
     local -a candidates=("${(@f)1}")
     local -a actions=("${(@f)2}")
     local -a action_descriptions=("${(@f)3}")
     local default_action="${4:-1}"
+    local extra_fzf_options="${5:-}"
 
     # Check if fzf is available
     if ! command -v fzf >/dev/null 2>&1; then
@@ -23,13 +24,13 @@ function fzf-action-core() {
 
     # Select candidate with fzf (expect TAB for action selection or ENTER for default)
     local selected
-    selected=$(printf "%s\n" "${candidates[@]}" | \
-        fzf --ansi \
-            --expect=tab \
-            --header="ENTER: default action | TAB: select action" \
-            --preview-window=right:50% \
-            --border \
-            --layout=reverse)
+    local fzf_cmd="fzf --ansi --expect=tab"
+    fzf_cmd="$fzf_cmd --header=\"ENTER: default action | TAB: select action\""
+    fzf_cmd="$fzf_cmd --preview-window=right:50% --border --layout=reverse"
+    if [[ -n "$extra_fzf_options" ]]; then
+        fzf_cmd="$fzf_cmd $extra_fzf_options"
+    fi
+    selected=$(printf "%s\n" "${candidates[@]}" | eval "$fzf_cmd")
 
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then

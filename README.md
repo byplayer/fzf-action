@@ -131,6 +131,26 @@ export FZF_ACTION_HISTORY_LIMIT=500
 
 Set to a higher value if you want to search through more history, or lower if you have performance concerns.
 
+### Command History fzf Options
+
+The command history widget uses fzf's `--scheme=history` option by default, which provides scoring optimized for command history search. You can customize the fzf options used by the command history widget:
+
+```zsh
+# Default: --scheme=history
+export FZF_ACTION_HISTORY_OPTIONS="--scheme=history"
+
+# Add additional fzf options
+export FZF_ACTION_HISTORY_OPTIONS="--scheme=history --exact"
+
+# Use default fzf scoring instead of history-optimized scoring
+export FZF_ACTION_HISTORY_OPTIONS="--scheme=default"
+
+# Disable additional options (use only the core fzf-action options)
+export FZF_ACTION_HISTORY_OPTIONS=""
+```
+
+The `--scheme=history` option tells fzf to use a scoring algorithm optimized for command history, which typically provides better results when searching through shell commands.
+
 ### Clipboard Command
 
 The clipboard copy action uses the `FZF_ACTION_CLIP_COPY_CMD` environment variable. The plugin automatically detects and configures the appropriate clipboard command for your platform:
