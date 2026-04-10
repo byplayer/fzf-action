@@ -15,3 +15,6 @@ source "${0:A:h}/git-status.zsh"
 
 # Load command history source
 source "${0:A:h}/command-history.zsh"
+
+# Load git worktree source
+source "${0:A:h}/git-worktree.zsh"
