@@ -247,6 +247,28 @@ function fzf-action-git-branches-reset-hard() {
     fi
 }
 
+# Action: Add worktree from branch
+function fzf-action-git-branches-worktree-add() {
+    local branch=$(fzf-action-git-branches-extract-name "$1")
+    local safe_branch=$(fzf-action-git-branches-sanitize "$branch")
+    # Strip remote prefix (e.g., origin/feature/login -> feature/login)
+    local local_branch="$branch"
+    if [[ "$1" =~ "(remote)" ]]; then
+        local_branch="${branch#*/}"
+    fi
+    local safe_local_branch=$(fzf-action-git-branches-sanitize "$local_branch")
+
+    if command -v git-wtadd >/dev/null 2>&1; then
+        BUFFER="git-wtadd '${safe_local_branch}' '${safe_branch}'"
+    else
+        # Escape branch name for directory: replace / with -
+        local escaped="${local_branch//\//-}"
+        local safe_escaped=$(fzf-action-git-branches-sanitize "$escaped")
+        BUFFER="git worktree add '.worktree/${safe_escaped}' '${safe_branch}'"
+    fi
+    zle accept-line
+}
+
 # Action: Delete branch
 function fzf-action-git-branches-delete() {
     local branch=$(fzf-action-git-branches-extract-name "$1")
@@ -308,6 +330,7 @@ function fzf-action-git-branches-all() {
         fzf-action-git-branches-create-from
         fzf-action-git-branches-diff
         fzf-action-git-branches-diff-stat
+        fzf-action-git-branches-worktree-add
         fzf-action-git-branches-reset-hard
         fzf-action-git-branches-delete
         fzf-action-git-branches-delete-force
@@ -326,6 +349,7 @@ function fzf-action-git-branches-all() {
         "create new branch from..."
         "diff"
         "diff statistics"
+        "worktree add"
         "reset hard"
         "delete"
         "delete force"
@@ -358,6 +382,7 @@ function fzf-action-git-branches() {
         fzf-action-git-branches-create-from
         fzf-action-git-branches-diff
         fzf-action-git-branches-diff-stat
+        fzf-action-git-branches-worktree-add
         fzf-action-git-branches-reset-hard
         fzf-action-git-branches-delete
         fzf-action-git-branches-delete-force
@@ -376,6 +401,7 @@ function fzf-action-git-branches() {
         "create new branch from..."
         "diff"
         "diff statistics"
+        "worktree add"
         "reset hard"
         "delete"
         "delete force"
