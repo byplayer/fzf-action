@@ -8,6 +8,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-04-17
+
+### Added
+
+- New git worktree selector source (`git-worktree.zsh`)
+  - Interactive fzf-based interface for git worktree management
+  - Parses `git worktree list --porcelain` output for candidates
+  - Actions: cd, append, delete, delete-with-branch, force-delete-with-branch
+  - Validation to prevent unsafe deletions (uncommitted changes, current worktree)
+  - Auto-loaded via `fzf-action.plugin.zsh`
+- Worktree add action in git-branches widget
+  - New `fzf-action-git-branches-worktree-add` action creates a worktree from the selected branch
+  - Uses `git-wtadd` command when available, otherwise falls back to `git worktree add .worktree/<escaped-branch> <branch>`
+  - Strips remote prefix (e.g., `origin/`) for the local branch name and directory
+  - Registered in both all-branches and local-branches menus
+
+### Changed
+
+- Performance: speed up branch listing in repositories with many remote branches
+  - Replaced `git branch` / `git branch -r` with `git for-each-ref` using `%(HEAD)` and `%(symref)` format fields
+  - Eliminated per-line `echo | sed` subprocess spawns by parsing tab-separated output with `IFS=$'\t' read`
+  - Detect `origin/HEAD` via `%(symref)` field instead of regex matching
+  - Significantly reduces overhead in repos with 1000+ remote branches
+- Added `argument-hint` to `/bump-version` slash command frontmatter so Claude Code displays `<major|minor|patch> [description]` in the command palette
+
 ## [1.2.0] - 2025-11-28
 
 ### Added
@@ -212,6 +237,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[1.3.0]: https://github.com/byplayer/fzf-action/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/byplayer/fzf-action/compare/v1.1.3...v1.2.0
 [1.1.3]: https://github.com/byplayer/fzf-action/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/byplayer/fzf-action/compare/v1.1.1...v1.1.2
