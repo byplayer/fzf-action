@@ -1,5 +1,6 @@
 ---
 description: Automate version bumps following semantic versioning (major/minor/patch)
+argument-hint: <major|minor|patch> [description]
 ---
 
 # Bump Version Workflow
