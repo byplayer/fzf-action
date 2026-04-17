@@ -9,36 +9,24 @@ function fzf-action-git-branches-get-candidates() {
     fi
 
     local -a branches
+    local head_marker refname symref
 
     # Get local branches
-    while IFS= read -r line; do
-        local is_current=""
-        local branch_name=$(echo "$line" | sed 's/^..//')
-
-        if [[ "$line" == \** ]]; then
-            is_current="* "
-            branch_name=$(echo "$branch_name" | sed 's/^* //')
-        fi
-
-        # Mark current branch with color (bold yellow for better visibility)
-        if [[ -n "$is_current" ]]; then
-            branches+=($'\033[1;33m'"${is_current}${branch_name}"$'\033[0m'" (local)")
+    while IFS=$'\t' read -r head_marker refname; do
+        if [[ "$head_marker" == "*" ]]; then
+            branches+=($'\033[1;33m'"* ${refname}"$'\033[0m'" (local)")
         else
-            branches+=("  ${branch_name} (local)")
+            branches+=("  ${refname} (local)")
         fi
-    done < <(git branch 2>/dev/null)
+    done < <(git for-each-ref --format='%(HEAD)%09%(refname:short)' refs/heads/ 2>/dev/null)
 
-    # Get remote branches
-    while IFS= read -r line; do
-        local branch_name=$(echo "$line" | sed 's/^..//')
-
-        # Skip HEAD pointer
-        if [[ "$branch_name" =~ "HEAD ->" ]]; then
-            continue
-        fi
-
-        branches+=("  ${branch_name} (remote)")
-    done < <(git branch -r 2>/dev/null)
+    # Get remote branches (skip symbolic refs like origin/HEAD)
+    # Note: symref field is placed last because leading IFS whitespace (tab)
+    # gets stripped by `read`, which would break detection of empty symref.
+    while IFS=$'\t' read -r refname symref; do
+        [[ -n "$symref" ]] && continue
+        branches+=("  ${refname} (remote)")
+    done < <(git for-each-ref --format='%(refname:short)%09%(symref)' refs/remotes/ 2>/dev/null)
 
     printf "%s\n" "${branches[@]}"
 }
@@ -51,24 +39,16 @@ function fzf-action-git-branches-get-local-candidates() {
     fi
 
     local -a branches
+    local head_marker refname
 
     # Get local branches only
-    while IFS= read -r line; do
-        local is_current=""
-        local branch_name=$(echo "$line" | sed 's/^..//')
-
-        if [[ "$line" == \** ]]; then
-            is_current="* "
-            branch_name=$(echo "$branch_name" | sed 's/^* //')
-        fi
-
-        # Mark current branch with color (bold yellow for better visibility)
-        if [[ -n "$is_current" ]]; then
-            branches+=($'\033[1;33m'"${is_current}${branch_name}"$'\033[0m'" (local)")
+    while IFS=$'\t' read -r head_marker refname; do
+        if [[ "$head_marker" == "*" ]]; then
+            branches+=($'\033[1;33m'"* ${refname}"$'\033[0m'" (local)")
         else
-            branches+=("  ${branch_name} (local)")
+            branches+=("  ${refname} (local)")
         fi
-    done < <(git branch 2>/dev/null)
+    done < <(git for-each-ref --format='%(HEAD)%09%(refname:short)' refs/heads/ 2>/dev/null)
 
     printf "%s\n" "${branches[@]}"
 }
